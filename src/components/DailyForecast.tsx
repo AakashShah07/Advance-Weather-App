@@ -1,0 +1,52 @@
+import React from 'react';
+import WeatherIcon from './WeatherIcon';
+
+interface DailyForecastProps {
+  day: {
+    date: string;
+    condition: string;
+    tempMax: number;
+    tempMin: number;
+    windSpeed: number;
+    humidity: number;
+  };
+  units: 'metric' | 'imperial';
+}
+
+const DailyForecast: React.FC<DailyForecastProps> = ({ day, units }) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const getTemperatureUnit = () => units === 'metric' ? '°C' : '°F';
+
+  return (
+    <div className="bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-colors">
+      <p className="text-white font-medium mb-2">{formatDate(day.date)}</p>
+      <div className="flex justify-between items-center">
+        <WeatherIcon condition={day.condition} size="medium" />
+        <div className="text-right">
+          <p className="text-white text-lg font-semibold">
+            {day.tempMax}{getTemperatureUnit()}
+          </p>
+          <p className="text-white/70 text-sm">
+            {day.tempMin}{getTemperatureUnit()}
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 text-white/80 text-sm">
+        <div className="flex justify-between">
+          <span>Humidity</span>
+          <span>{day.humidity}%</span>
+        </div>
+        <div className="flex justify-between mt-1">
+          <span>Wind</span>
+          <span>{day.windSpeed} {units === 'metric' ? 'm/s' : 'mph'}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DailyForecast;
