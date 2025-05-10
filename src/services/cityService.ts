@@ -1,5 +1,6 @@
 import { City } from '../types';
-import { mockCities } from '../mock/cityData';
+// import { mockCities } from '../mock/cityData';
+import { getWeatherData } from './weatherService';
 
 export const searchCitiesApi = async (term: string, limit = 20, page = 1): Promise<City[]> => {
   const offset = (page - 1) * limit;
@@ -11,15 +12,38 @@ export const searchCitiesApi = async (term: string, limit = 20, page = 1): Promi
 
   const data = await res.json();
 
-  const cities: City[] = data.records.map((record: any) => {
-    const fields = record.fields;
-    return {
-      id: record.recordid,
-      name: fields.name,
-      country: fields.cou_name_en,
-      timezone: fields.timezone || 'Unknown',
-    };
-  });
+  const cities: City[] = await Promise.all(
+    data.records.map(async (record: any) => {
+      const fields = record.fields;
+
+      const lat = fields.coordinates?.[1];
+      const lon = fields.coordinates?.[0];
+
+      let currentWeather = undefined;
+      if (lat && lon) {
+        try {
+          const weather = await getWeatherData(lat, lon, 'imperial');
+          currentWeather = {
+            temperature: weather.current.temperature,
+            condition: weather.current.weather,
+            unit: weather.current.unit,
+          };
+        } catch (error) {
+          console.error(`Weather fetch failed for ${fields.name}:`, error);
+        }
+      }
+
+      return {
+        id: record.recordid,
+        name: fields.name,
+        country: fields.cou_name_en,
+        latitude: fields.latitude,
+        longitude: fields.longitude,
+        timezone: fields.timezone || 'Unknown',
+        currentWeather,
+      };
+    })
+  );
 
   return cities;
 };
@@ -33,15 +57,38 @@ export const getCitiesApi = async (page = 1, limit = 20): Promise<City[]> => {
 
   const data = await res.json();
 
-  const cities: City[] = data.records.map((record: any) => {
-    const fields = record.fields;
-    return {
-      id: record.recordid,
-      name: fields.name,
-      country: fields.cou_name_en,
-      timezone: fields.timezone || 'Unknown',
-    };
-  });
+  const cities: City[] = await Promise.all(
+    data.records.map(async (record: any) => {
+      const fields = record.fields;
+
+      const lat = fields.coordinates?.[1];
+      const lon = fields.coordinates?.[0];
+
+      let currentWeather = undefined;
+      if (lat && lon) {
+        try {
+          const weather = await getWeatherData(lat, lon, 'imperial');
+          currentWeather = {
+            temperature: weather.current.temperature,
+            condition: weather.current.weather,
+            unit: weather.current.unit,
+          };
+        } catch (error) {
+          console.error(`Weather fetch failed for ${fields.name}:`, error);
+        }
+      }
+
+      return {
+        id: record.recordid,
+        name: fields.name,
+        country: fields.cou_name_en,
+        latitude: fields.latitude,
+        longitude: fields.longitude,
+        timezone: fields.timezone || 'Unknown',
+        currentWeather,
+      };
+    })
+  );
 
   return cities;
 };

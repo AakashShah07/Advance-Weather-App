@@ -3,7 +3,8 @@ import MyHeader from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import { Search } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-
+import { getWeatherData } from "@/services/weatherService";
+import { getCitiesApi } from "@/services/cityService";
 import CityRow from "@/components/CityRow";
 import TableHeader from "@/components/TableHeader";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -14,12 +15,49 @@ import { useWeather } from "@/contexts/WeatherContext";
 export default function Home() {
   const { cities, loading, searchCities, hasMore, loadMore } = useCities();
   const [searchTerm, setSearchTerm] = useState("");
+  const [enrichedCities, setEnrichedCities] = useState<City[]>([]);
+
   const [sortConfig, setSortConfig] = useState<{
     key: keyof City;
     direction: "ascending" | "descending";
   } | null>(null);
   const observer = useRef<IntersectionObserver | null>(null);
   const { addToFavorites, favorites } = useWeather();
+
+  useEffect(() => {
+    if (!loading && cities.length > 0) {
+      enrichCitiesWithWeather();
+    }
+  }, [cities, loading]);
+  
+  const enrichCitiesWithWeather = async () => {
+
+    const enriched = await Promise.all(
+      cities.map(async (city) => {
+        if (city.currentWeather || !city.latitude || !city.longitude) {
+          return city;
+        }
+  
+        try {
+          const weather = await getWeatherData(city.latitude, city.longitude, 'imperial');
+          return {
+            ...city,
+            currentWeather: {
+              temperature: weather.current.temperature,
+              condition: weather.current.weather,
+              unit: weather.current.unit,
+            },
+          };
+        } catch (error) {
+          console.error(`Failed to fetch weather for ${city.name}:`, error);
+          return city;
+        }
+      })
+    );
+  
+    setEnrichedCities(enriched);
+  };
+  
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -45,7 +83,7 @@ export default function Home() {
   };
 
   const sortedCities = React.useMemo(() => {
-    const citiesCopy = [...cities];
+    const citiesCopy = [...enrichedCities.length ? enrichedCities : cities];
     if (sortConfig !== null) {
       citiesCopy.sort((a, b) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -58,7 +96,7 @@ export default function Home() {
       });
     }
     return citiesCopy;
-  }, [cities, sortConfig]);
+  }, [enrichedCities,cities, sortConfig]);
 
   const lastCityElementRef = useCallback(
     (node: HTMLDivElement | null) => {

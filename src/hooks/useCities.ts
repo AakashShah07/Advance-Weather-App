@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { City } from '../types';
 import { searchCitiesApi, getCitiesApi } from '../services/cityService';
 
@@ -50,6 +50,26 @@ export const useCities = () => {
       setLoading(false);
     }
   }, [loading, hasMore, page, lastSearchTerm]);
+
+  // 👉 Auto-load first page if no search term
+  useEffect(() => {
+    const fetchInitialCities = async () => {
+      if (cities.length === 0 && !lastSearchTerm) {
+        setLoading(true);
+        try {
+          const initialCities = await getCitiesApi(1);
+          setCities(initialCities);
+          setHasMore(initialCities.length > 0);
+        } catch (error) {
+          console.error('Error fetching initial cities:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInitialCities();
+  }, []); // Runs only once on mount
 
   return {
     cities,

@@ -3,6 +3,8 @@ export interface City {
   name: string;
   country: string;
   timezone: string;
+  latitude?: number;
+  longitude?: number;
   currentWeather?: {
     temperature: number;
     condition: string;
