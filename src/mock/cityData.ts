@@ -4,7 +4,7 @@ import { City } from '../types';
 export const mockCities: City[] = [
   {
     id: 'london',
-    name: 'London',
+    name: 'Londonnnnnn',
     country: 'United Kingdom',
     timezone: 'GMT+1',
     currentWeather: {

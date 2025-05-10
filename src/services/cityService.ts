@@ -2,37 +2,46 @@ import { City } from '../types';
 import { mockCities } from '../mock/cityData';
 
 export const searchCitiesApi = async (term: string, limit = 20, page = 1): Promise<City[]> => {
-  // In a real app, this would be an API call to a city database
-  // For demonstration purposes, we'll filter the mock data
-  
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const normalizedTerm = term.toLowerCase().trim();
-  
-  if (!normalizedTerm) {
-    return getCitiesApi(page, limit);
-  }
-  
-  const filteredCities = mockCities.filter(city => 
-    city.name.toLowerCase().includes(normalizedTerm) || 
-    city.country.toLowerCase().includes(normalizedTerm)
+  const offset = (page - 1) * limit;
+  const q = term ? `&q=${encodeURIComponent(term)}` : '';
+
+  const res = await fetch(
+    `https://public.opendatasoft.com/api/records/1.0/search/?dataset=geonames-all-cities-with-a-population-1000&rows=${limit}&start=${offset}${q}`
   );
-  
-  const pageSize = limit || 20;
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  
-  return filteredCities.slice(startIndex, endIndex);
+
+  const data = await res.json();
+
+  const cities: City[] = data.records.map((record: any) => {
+    const fields = record.fields;
+    return {
+      id: record.recordid,
+      name: fields.name,
+      country: fields.cou_name_en,
+      timezone: fields.timezone || 'Unknown',
+    };
+  });
+
+  return cities;
 };
 
 export const getCitiesApi = async (page = 1, limit = 20): Promise<City[]> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const pageSize = limit;
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  
-  return mockCities.slice(startIndex, endIndex);
+  const offset = (page - 1) * limit;
+
+  const res = await fetch(
+    `https://public.opendatasoft.com/api/records/1.0/search/?dataset=geonames-all-cities-with-a-population-1000&rows=${limit}&start=${offset}`
+  );
+
+  const data = await res.json();
+
+  const cities: City[] = data.records.map((record: any) => {
+    const fields = record.fields;
+    return {
+      id: record.recordid,
+      name: fields.name,
+      country: fields.cou_name_en,
+      timezone: fields.timezone || 'Unknown',
+    };
+  });
+
+  return cities;
 };
