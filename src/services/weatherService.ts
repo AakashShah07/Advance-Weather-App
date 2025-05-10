@@ -1,13 +1,12 @@
-import { mockWeatherData } from '../mock/weatherData';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export const getWeatherData = async (
   lat: number,
   lon: number,
   units: string
 ) => {
-  const apiKey = 'a6d02fb45acd08f0eb45c32a1270de1c'; // move this to an .env file in production
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${apiKey}`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${process.env.NEXT_PUBLIC_WEATHERMAP_KEY}`;
 
   const response = await fetch(url);
   if (!response.ok) {
@@ -40,25 +39,59 @@ export const getWeatherData = async (
 };
 
 
-const convertToMetric = (data: any) => {
-  const convertedData = {
-    ...data,
+export const getForecastData = async (
+  lat: number,
+  lon: number,
+  units: string
+) => {
+
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${process.env.NEXT_PUBLIC_WEATHERMAP_KEY}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch weather forecast data');
+  }
+
+  const apiData = await response.json();
+
+  // Extract the current weather from the first forecast entry
+  const current = apiData.list[0];
+  const city = apiData.city;
+
+  const data = {
     current: {
-      ...data.current,
-      temperature: Math.round((data.current.temperature - 32) * 5/9),
-      feelsLike: Math.round((data.current.feelsLike - 32) * 5/9),
-      tempMin: Math.round((data.current.tempMin - 32) * 5/9),
-      tempMax: Math.round((data.current.tempMax - 32) * 5/9),
-      windSpeed: Math.round(data.current.windSpeed / 2.237),
-      unit: 'C'
+      cityName: city.name,
+      country: city.country,
+      temperature: Math.round(current.main.temp),
+      feelsLike: Math.round(current.main.feels_like),
+      tempMin: Math.round(current.main.temp_min),
+      tempMax: Math.round(current.main.temp_max),
+      weather: current.weather[0].main,
+      weatherDescription: current.weather[0].description,
+      weatherIcon: `https://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`,
+      humidity: current.main.humidity,
+      pressure: current.main.pressure,
+      windSpeed: current.wind.speed,
+      unit: units === 'metric' ? 'C' : 'F',
     },
-    forecast: data.forecast.map((day: any) => ({
-      ...day,
-      tempMin: Math.round((day.tempMin - 32) * 5/9),
-      tempMax: Math.round((day.tempMax - 32) * 5/9),
-      windSpeed: Math.round(day.windSpeed / 2.237)
+
+    forecast: apiData.list.map((item: any) => ({
+      timestamp: item.dt,
+      datetime: item.dt_txt,
+      temperature: Math.round(item.main.temp),
+      feelsLike: Math.round(item.main.feels_like),
+      tempMin: Math.round(item.main.temp_min),
+      tempMax: Math.round(item.main.temp_max),
+      weather: item.weather[0].main,
+      weatherDescription: item.weather[0].description,
+      weatherIcon: `https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
+      humidity: item.main.humidity,
+      pressure: item.main.pressure,
+      windSpeed: item.wind.speed,
+      pop: item.pop,
+      rainVolume: item.rain?.['3h'] || 0,
     }))
   };
-  
-  return convertedData;
+
+  return data;
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { City } from '../types';
 // import { mockCities } from '../mock/cityData';
 import { getWeatherData } from './weatherService';

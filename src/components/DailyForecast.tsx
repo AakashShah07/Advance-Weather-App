@@ -19,13 +19,15 @@ const DailyForecast: React.FC<DailyForecastProps> = ({ day, units }) => {
     return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
-  const getTemperatureUnit = () => units === 'metric' ? '°C' : '°F';
+  const getTemperatureUnit = () => units === 'metric' ? '°F' : '°C';
+
 
   return (
     <div className="bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-colors">
-      <p className="text-white font-medium mb-2">{formatDate(day.date)}</p>
+     <p className="text-white font-medium mb-2">{formatDate(day.datetime)}</p>
+
       <div className="flex justify-between items-center">
-        <WeatherIcon condition={day.condition} size="medium" />
+        <WeatherIcon condition={day.weatherIcon} size="medium" />
         <div className="text-right">
           <p className="text-white text-lg font-semibold">
             {day.tempMax}{getTemperatureUnit()}

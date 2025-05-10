@@ -8,7 +8,7 @@ import UnitToggle from '@/components/UnitToggle';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import { useWeather } from '@/contexts/WeatherContext';
 import { useBackground } from '@/hooks/useBackground';
-import { getWeatherData } from '@/services/weatherService';
+import { getWeatherData,getForecastData } from '@/services/weatherService';
 import { Forecast ,Weather} from '@/types';
 
 const WeatherDetails: React.FC = () => {
@@ -24,9 +24,6 @@ const WeatherDetails: React.FC = () => {
   const [forecast, setForecast] = useState<Forecast[]>([]);
   const [loading, setLoading] = useState(true);
   const [units, setUnits] = useState<'metric' | 'imperial'>('metric');
-  const [newUnits, setNewUnits] = useState<'°C' | '°F'>('°F');
-  const { addToFavorites, favorites, removeFromFavorite } = useWeather();
-  const isFavorite = cityId ? favorites.includes(cityId) : false;
   const { backgroundStyle, weatherClass } = useBackground(weather?.condition);
 
   useEffect(() => {
@@ -57,7 +54,11 @@ const WeatherDetails: React.FC = () => {
             lon: parseFloat(lon),
           },
         });
-        setForecast(data.forecast);
+        // setForecast(data.forecast);
+        const foreDat = await getForecastData(parseFloat(lat), parseFloat(lon), units);
+        setForecast(foreDat.forecast)
+
+
       } catch (error) {
         console.error('Error fetching weather data:', error);
       } finally {
@@ -109,19 +110,17 @@ const WeatherDetails: React.FC = () => {
             className="flex items-center text-white bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors"
             aria-label="Go back"
           >
-            <ChevronLeft className="h-6 w-6" />
+            {/* <ChevronLeft className="h-6 w-6" /> */}
           </button>
           
           <UnitToggle units={units} onChange={handleUnitChange} />
           
           <button
             onClick={handleFavoriteToggle}
-            className={`flex items-center justify-center rounded-full p-2 transition-colors ${
-              isFavorite 
-                ? 'bg-pink-500 text-white hover:bg-pink-600' 
-                : 'bg-white/20 text-white hover:bg-white/30'
+            className={`flex items-center justify-center rounded-full p-2 transition-colors 
+             'bg-white/20 text-white hover:bg-white/30'
             }`}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={'Add to favorites'}
           >
             {/* <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} /> */}
           </button>
@@ -200,21 +199,7 @@ const WeatherDetails: React.FC = () => {
               </div>
             </div>
 
-            {weather.coordinates && (
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-4">
-                <h2 className="text-2xl font-bold text-white mb-4">Location</h2>
-                <div className="h-64 rounded-lg overflow-hidden">
-                  <img 
-                    src={`https://maps.googleapis.com/maps/api/staticmap?center=${weather.coordinates.lat},${weather.coordinates.lon}&zoom=10&size=800x400&markers=color:red%7C${weather.coordinates.lat},${weather.coordinates.lon}&key=YOUR_API_KEY`} 
-                    alt="Map location"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <p className="text-sm text-white opacity-75 mt-2">
-                  Note: This is a placeholder map image. In a production app, you would use a real map API.
-                </p>
-              </div>
-            )}
+            
           </>
         )}
       </div>
