@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect } from 'react';
 import { City } from '../types';
 import { searchCitiesApi, getCitiesApi } from '../services/cityService';

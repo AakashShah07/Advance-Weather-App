@@ -27,7 +27,7 @@ const CityRow = forwardRef<HTMLTableRowElement, CityRowProps>(
       }
     };
 
-    const handleContextMenu = (e: React.MouseEvent) => {
+    const handleContextMenu = () => {
       // Allow default context menu for "open in new tab" functionality
     };
 

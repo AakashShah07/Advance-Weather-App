@@ -1,11 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import MyHeader from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import { Search } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getWeatherData } from "@/services/weatherService";
-// import { getCitiesApi } from "@/services/cityService";
-import { useRouter } from 'next/navigation';
 
 import CityRow from "@/components/CityRow";
 import TableHeader from "@/components/TableHeader";
@@ -18,7 +17,6 @@ export default function Home() {
   const { cities, loading, searchCities, hasMore, loadMore } = useCities();
   const [searchTerm, setSearchTerm] = useState("");
   const [enrichedCities, setEnrichedCities] = useState<City[]>([]);
-  const { push } = useRouter();
 
   // const navigate = useNavigation();
   const [sortConfig, setSortConfig] = useState<{
@@ -97,10 +95,10 @@ export default function Home() {
     const citiesCopy = [...enrichedCities.length ? enrichedCities : cities];
     if (sortConfig !== null) {
       citiesCopy.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
+        if ((a[sortConfig.key] ?? '') < (b[sortConfig.key] ?? '')) {
           return sortConfig.direction === "ascending" ? -1 : 1;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
+        if ((a[sortConfig.key] ?? '') > (b[sortConfig.key] ?? '')) {
           return sortConfig.direction === "ascending" ? 1 : -1;
         }
         return 0;

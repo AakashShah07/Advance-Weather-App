@@ -1,12 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams } from 'next/navigation'; // ✅ NEXT.JS IMPORT
-import { ChevronLeft, Heart, MapPin, Droplets, Wind, ArrowDown, ArrowUp, Thermometer } from 'lucide-react';
+import {  MapPin, Droplets, Wind, ArrowDown, ArrowUp, Thermometer } from 'lucide-react';
 import DailyForecast from '@/components/DailyForecast';
 import WeatherIcon from '@/components/WeatherIcon';
 import UnitToggle from '@/components/UnitToggle';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
-import { useWeather } from '@/contexts/WeatherContext';
 import { useBackground } from '@/hooks/useBackground';
 import { getWeatherData,getForecastData } from '@/services/weatherService';
 import { Forecast ,Weather} from '@/types';

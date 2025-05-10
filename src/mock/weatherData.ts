@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Mock weather data for demonstration purposes
 export const mockWeatherData: Record<string, any> = {
   'london': {

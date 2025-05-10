@@ -32,10 +32,13 @@ export interface Weather {
 }
 
 export interface Forecast {
+  datetime: string;
   date: string;
   condition: string;
   tempMax: number;
   tempMin: number;
   windSpeed: number;
   humidity: number;
+  weatherIcon: string;
+
 }

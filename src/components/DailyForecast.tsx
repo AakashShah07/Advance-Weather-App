@@ -1,14 +1,17 @@
+// /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import WeatherIcon from './WeatherIcon';
 
 interface DailyForecastProps {
   day: {
+    datetime: string;
     date: string;
     condition: string;
     tempMax: number;
     tempMin: number;
     windSpeed: number;
     humidity: number;
+    weatherIcon: string;
   };
   units: 'metric' | 'imperial';
 }
