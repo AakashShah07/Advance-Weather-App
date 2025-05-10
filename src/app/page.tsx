@@ -4,7 +4,9 @@ import SearchBar from "@/components/SearchBar";
 import { Search } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { getWeatherData } from "@/services/weatherService";
-import { getCitiesApi } from "@/services/cityService";
+// import { getCitiesApi } from "@/services/cityService";
+import { useRouter } from 'next/navigation';
+
 import CityRow from "@/components/CityRow";
 import TableHeader from "@/components/TableHeader";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -16,7 +18,9 @@ export default function Home() {
   const { cities, loading, searchCities, hasMore, loadMore } = useCities();
   const [searchTerm, setSearchTerm] = useState("");
   const [enrichedCities, setEnrichedCities] = useState<City[]>([]);
+  const { push } = useRouter();
 
+  // const navigate = useNavigation();
   const [sortConfig, setSortConfig] = useState<{
     key: keyof City;
     direction: "ascending" | "descending";
@@ -30,6 +34,15 @@ export default function Home() {
     }
   }, [cities, loading]);
   
+  const handleCityClick = (city: City) => {
+
+    console.log("City is ", city)
+
+    const url = `/weather/${city.id}?lat=${city.latitude}&lon=${city.longitude}`;
+    window.open(url, '_blank');
+  };
+  
+
   const enrichCitiesWithWeather = async () => {
 
     const enriched = await Promise.all(
@@ -54,6 +67,7 @@ export default function Home() {
         }
       })
     );
+    console.log("Enriched cities: ", enriched);
   
     setEnrichedCities(enriched);
   };
@@ -64,9 +78,6 @@ export default function Home() {
     searchCities(value);
   };
 
-  const handleCityClick = (cityId: string) => {
-    // navigate(`/weather/${cityId}`);
-  };
 
   const handleSort = (key: keyof City) => {
     let direction: "ascending" | "descending" = "ascending";
@@ -140,7 +151,7 @@ export default function Home() {
                           key={city.id}
                           city={city}
                           isFavorite={favorites.includes(city.id)}
-                          onClick={() => handleCityClick(city.id)}
+                          onClick={() => handleCityClick(city)}
                           onFavorite={() => addToFavorites(city.id)}
                         />
                       );
@@ -150,7 +161,7 @@ export default function Home() {
                           key={city.id}
                           city={city}
                           isFavorite={favorites.includes(city.id)}
-                          onClick={() => handleCityClick(city.id)}
+                          onClick={() => handleCityClick(city)}
                           onFavorite={() => addToFavorites(city.id)}
                         />
                       );

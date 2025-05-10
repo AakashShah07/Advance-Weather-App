@@ -37,8 +37,8 @@ export const searchCitiesApi = async (term: string, limit = 20, page = 1): Promi
         id: record.recordid,
         name: fields.name,
         country: fields.cou_name_en,
-        latitude: fields.latitude,
-        longitude: fields.longitude,
+        latitude: lat,
+        longitude: lon,
         timezone: fields.timezone || 'Unknown',
         currentWeather,
       };
@@ -82,8 +82,8 @@ export const getCitiesApi = async (page = 1, limit = 20): Promise<City[]> => {
         id: record.recordid,
         name: fields.name,
         country: fields.cou_name_en,
-        latitude: fields.latitude,
-        longitude: fields.longitude,
+        latitude: lat,
+        longitude: lon,
         timezone: fields.timezone || 'Unknown',
         currentWeather,
       };
