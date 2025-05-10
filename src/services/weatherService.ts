@@ -3,7 +3,7 @@ import { mockWeatherData } from '../mock/weatherData';
 export const getWeatherData = async (
   lat: number,
   lon: number,
-  units: 'imperial' 
+  units: string
 ) => {
   const apiKey = 'a6d02fb45acd08f0eb45c32a1270de1c'; // move this to an .env file in production
 
@@ -31,7 +31,7 @@ export const getWeatherData = async (
       humidity: apiData.main.humidity,
       pressure: apiData.main.pressure,
       windSpeed: apiData.wind.speed,
-      unit: units === 'imperial' ? 'C' : 'F'
+      unit: units === 'metric' ? 'F' : 'C'
     },
     forecast: [] // If needed, you can use the 5-day forecast API later
   };

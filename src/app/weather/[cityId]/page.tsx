@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { useParams,useSearchParams} from 'react-router-dom';
+import { useSearchParams, useParams } from 'next/navigation'; // ✅ NEXT.JS IMPORT
 import { ChevronLeft, Heart, MapPin, Droplets, Wind, ArrowDown, ArrowUp, Thermometer } from 'lucide-react';
 import DailyForecast from '@/components/DailyForecast';
 import WeatherIcon from '@/components/WeatherIcon';
@@ -17,11 +17,14 @@ const WeatherDetails: React.FC = () => {
 
   const cityId = params.cityId;
   const lat = searchParams.get('lat');
+  const name = searchParams.get('name');
+  const country = searchParams.get('country');
   const lon = searchParams.get('lon');  // const navigate = useNavigate();
   const [weather, setWeather] = useState<Weather>();
   const [forecast, setForecast] = useState<Forecast[]>([]);
   const [loading, setLoading] = useState(true);
   const [units, setUnits] = useState<'metric' | 'imperial'>('metric');
+  const [newUnits, setNewUnits] = useState<'°C' | '°F'>('°F');
   const { addToFavorites, favorites, removeFromFavorite } = useWeather();
   const isFavorite = cityId ? favorites.includes(cityId) : false;
   const { backgroundStyle, weatherClass } = useBackground(weather?.condition);
@@ -32,8 +35,28 @@ const WeatherDetails: React.FC = () => {
       
       setLoading(true);
       try {
-        const data = await getWeatherData(lat, lon, units);
-        setWeather(data.current);
+        if (!lat || !lon || !units) {
+          throw new Error('Latitude or Longitude is missing');
+        }
+        const data = await getWeatherData(parseFloat(lat), parseFloat(lon), units);
+        setWeather({
+          cityName: name ?? '',
+          country: country ?? '',
+          temperature: data.current.temperature,
+          feelsLike: data.current.feelsLike,
+          tempMin: data.current.tempMin,
+          tempMax: data.current.tempMax,
+          description: data.current.weatherDescription,
+          condition: data.current.weather, // Ensure this maps to the correct condition
+          humidity: data.current.humidity,
+          pressure: data.current.pressure,
+          windSpeed: data.current.windSpeed,
+          unit: units,
+          coordinates: {
+            lat: parseFloat(lat),
+            lon: parseFloat(lon),
+          },
+        });
         setForecast(data.forecast);
       } catch (error) {
         console.error('Error fetching weather data:', error);
@@ -46,25 +69,25 @@ const WeatherDetails: React.FC = () => {
   }, [cityId, units]);
 
   const handleFavoriteToggle = () => {
-    if (!cityId) return;
+    // if (!cityId) return;
     
-    if (isFavorite) {
-      removeFromFavorite(cityId);
-    } else {
-      addToFavorites(cityId);
-    }
+    // if (isFavorite) {
+    //   removeFromFavorite(cityId);
+    // } else {
+    //   addToFavorites(cityId);
+    // }
   };
 
   const handleUnitChange = (newUnit: 'metric' | 'imperial') => {
     setUnits(newUnit);
   };
-
+ 
   const handleBack = () => {
     // navigate('/');
   };
 
-  const getTemperatureUnit = () => units === 'metric' ? '°C' : '°F';
-  const getSpeedUnit = () => units === 'metric' ? 'm/s' : 'mph';
+  const getTemperatureUnit = () =>  units === 'metric' ? '°F' : '°C';;
+    const getSpeedUnit = () => units === 'metric' ? 'm/s' : 'mph';
 
   if (loading) {
     return (
@@ -100,7 +123,7 @@ const WeatherDetails: React.FC = () => {
             }`}
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
+            {/* <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} /> */}
           </button>
         </header>
 

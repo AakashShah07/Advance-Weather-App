@@ -38,7 +38,7 @@ export default function Home() {
 
     console.log("City is ", city)
 
-    const url = `/weather/${city.id}?lat=${city.latitude}&lon=${city.longitude}`;
+    const url = `/weather/${city.id}?lat=${city.latitude}&lon=${city.longitude}&country=${city.country}&name=${city.name}`;
     window.open(url, '_blank');
   };
   

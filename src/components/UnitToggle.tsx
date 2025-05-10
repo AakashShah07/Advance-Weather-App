@@ -16,7 +16,7 @@ const UnitToggle: React.FC<UnitToggleProps> = ({ units, onChange }) => {
             : 'text-white hover:bg-white/10'
         }`}
       >
-        °C
+        °F
       </button>
       <button
         onClick={() => onChange('imperial')}
@@ -26,7 +26,7 @@ const UnitToggle: React.FC<UnitToggleProps> = ({ units, onChange }) => {
             : 'text-white hover:bg-white/10'
         }`}
       >
-        °F
+        °C
       </button>
     </div>
   );
