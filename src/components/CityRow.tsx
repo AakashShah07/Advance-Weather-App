@@ -1,5 +1,4 @@
 import React, { forwardRef } from 'react';
-import { Star } from 'lucide-react';
 import WeatherIcon from './WeatherIcon';
 import { City } from '../types';
 
@@ -11,11 +10,8 @@ interface CityRowProps {
 }
 
 const CityRow = forwardRef<HTMLTableRowElement, CityRowProps>(
-  ({ city, onClick, onFavorite, isFavorite }, ref) => {
-    const handleFavoriteClick = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      onFavorite();
-    };
+  ({ city, onClick }, ref) => {
+    
 
     const handleRowClick = () => {
       onClick();
@@ -43,13 +39,6 @@ const CityRow = forwardRef<HTMLTableRowElement, CityRowProps>(
       >
         <td className="px-6 py-4 whitespace-nowrap">
           <div className="flex items-center">
-            <button
-              onClick={handleFavoriteClick}
-              className={`mr-3 ${isFavorite ? 'text-yellow-500' : 'text-gray-300 dark:text-gray-600'} hover:text-yellow-500 transition-colors`}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Star className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
-            </button>
             <div>
               <div className="text-sm font-medium text-gray-900 dark:text-white">{city.name}</div>
             </div>

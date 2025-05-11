@@ -30,7 +30,7 @@ export const useBackground = (condition?: string) => {
     } else if (condition_lower.includes('snow')) {
       return {
         backgroundStyle: {
-          backgroundImage: 'linear-gradient(to bottom right, #ecf0f1, #bdc3c7)',
+          backgroundImage: 'linear-gradient(to bottom right, #aeb6bf, #7f8c8d)', // darker gray gradient
         },
         weatherClass: 'bg-gray-200 text-gray-800', // Different text color for light background
       };

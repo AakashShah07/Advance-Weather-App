@@ -19,8 +19,14 @@ interface DailyForecastProps {
 const DailyForecast: React.FC<DailyForecastProps> = ({ day, units }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  };
+    return date.toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // Set to false for 24-hour format
+    });  };
 
   const getTemperatureUnit = () => units === 'metric' ? '°F' : '°C';
 
